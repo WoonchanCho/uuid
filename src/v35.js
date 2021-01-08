@@ -22,18 +22,21 @@ export default function v35(name, version, hashfunc) {
       value = stringToBytes(value);
     }
 
-    if (typeof namespace === 'string') {
-      namespace = parse(namespace);
-    }
+    // Woonchan: comment this to allow empty namespace to be processed
+    if (namespace !== '') {
+      if (typeof namespace === 'string') {
+        namespace = parse(namespace);
+      }
 
-    if (namespace.length !== 16) {
-      throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
+      if (namespace.length !== 16) {
+        throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
+      }
     }
 
     // Compute hash of namespace and value, Per 4.3
     // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
     // hashfunc([...namespace, ... value])`
-    let bytes = new Uint8Array(16 + value.length);
+    let bytes = new Uint8Array(namespace.length + value.length);
     bytes.set(namespace);
     bytes.set(value, namespace.length);
     bytes = hashfunc(bytes);
